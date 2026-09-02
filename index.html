@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>올림포스 쇼츠 무한 문제집</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+    
+    .app-container { width: 100vw; height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+    .app-container::-webkit-scrollbar { display: none; }
+
+    .short-card {
+      width: 100vw; height: 100vh; scroll-snap-align: start; scroll-snap-stop: always;
+      display: flex; justify-content: center; align-items: center; position: relative; background: #121212;
+    }
+
+    .problem-img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 8px; }
+    
+    .badge {
+      position: absolute; top: 20px; left: 20px; background: rgba(0,210,255,0.8);
+      color: #000; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container" id="app"></div>
+
+<script>
+  // 1. 전체 문제 이미지 개수를 지정하세요 (예: 50개면 TOTAL_PROBLEMS = 50)
+  const TOTAL_PROBLEMS = 50; 
+  
+  // 이미지 파일명이 1.jpg, 2.jpg ... 일 때 배열 생성
+  let problemList = Array.from({length: TOTAL_PROBLEMS}, (_, i) => `${i + 1}.jpg`);
+
+  // 랜덤 셔플 (쇼츠처럼 섞기)
+  problemList.sort(() => Math.random() - 0.5);
+
+  const app = document.getElementById('app');
+
+  problemList.forEach((imgSrc, idx) => {
+    const card = document.createElement('div');
+    card.className = 'short-card';
+    card.innerHTML = `
+      <div class="badge">문제 ${idx + 1} / ${TOTAL_PROBLEMS}</div>
+      <img class="problem-img" src="${imgSrc}" alt="올림포스 문제">
+    `;
+    app.appendChild(card);
+  });
+</script>
+</body>
+</html>
