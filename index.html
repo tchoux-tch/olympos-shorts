@@ -1,109 +1,121 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>올림포스 PDF 쇼츠 퀴즈</title>
-  <!-- PDF.js 라이브러리 로드 -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background-color: #0b0c10; font-family: -apple-system, sans-serif; color: #fff; }
-    
-    .app-container { width: 100vw; height: 100vh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
-    .app-container::-webkit-scrollbar { display: none; }
+    <meta charset="UTF-8">
+    <title>영어 지문 쇼츠 카드리더</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #111827;
+            color: #ffffff;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
 
-    .short-card {
-      width: 100vw; height: 100vh; scroll-snap-align: start; scroll-snap-stop: always;
-      position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center;
-      padding: 10px; background: #12131c;
-    }
+        /* 쇼츠 실제 비율 프레임 (1080 x 1920) */
+        .shorts-container {
+            width: 405px;  /* 화면 표시용 축소 비율 (원래: 1080px) */
+            height: 720px; /* 화면 표시용 축소 비율 (원래: 1920px) */
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 24px;
+            padding: 36px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+            position: relative;
+        }
 
-    .badge {
-      position: absolute; top: 16px; left: 16px; background: rgba(0, 229, 255, 0.85);
-      color: #000; padding: 6px 14px; border-radius: 20px; font-weight: 800; font-size: 13px; z-index: 10;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
+        /* 상단 태그 */
+        .tag {
+            align-self: flex-start;
+            background: #38bdf8;
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-    .pdf-canvas {
-      max-width: 100%; max-height: 92vh; object-fit: contain; border-radius: 12px;
-      background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    }
+        /* 본문 (영어 지문) */
+        .passage {
+            font-size: 20px;
+            line-height: 1.6;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-top: 20px;
+            word-break: keep-all;
+        }
 
-    .loading { font-size: 16px; color: #00e5ff; font-weight: bold; }
-  </style>
+        /* 지문 내 핵심 구문 하이라이트 스타일 */
+        .highlight {
+            color: #facc15;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        /* 하단 (해석 및 어휘) */
+        .bottom-section {
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+        }
+
+        .translation {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            word-break: keep-all;
+        }
+
+        .vocab-box {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #cbd5e1;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .vocab-item {
+            background: #334155;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="app-container" id="app">
-  <div class="short-card"><div class="loading">PDF 문제를 불러오는 중입니다...</div></div>
-</div>
+    <!-- 쇼츠 카드 프레임 -->
+    <div class="shorts-container">
+        <div>
+            <div class="tag">Today's English</div>
+            <!-- 영어 지문 -->
+            <div class="passage">
+                Small daily improvements over time lead to <span class="highlight">stunning results</span>. Consistency is the key to mastering any new skill.
+            </div>
+        </div>
 
-<script>
-  // 1. 저장소에 올린 PDF 파일 이름
-  const pdfUrl = './Splited_c2af500f-9f69-4271-b3cd-be114f8bac12.pdf'; 
-  
-  // PDF.js 워커 설정
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        <div class="bottom-section">
+            <!-- 한글 해석 -->
+            <div class="translation">
+                시간이 지남에 따라 쌓이는 작은 일상의 발전은 놀라운 결과를 만들어냅니다. 꾸준함이 새로운 기술을 습득하는 핵심입니다.
+            </div>
+            <!-- 주요 단어 -->
+            <div class="vocab-box">
+                <span class="vocab-item">stunning: 놀라운</span>
+                <span class="vocab-item">consistency: 꾸준함</span>
+            </div>
+        </div>
+    </div>
 
-  const app = document.getElementById('app');
-
-  async function loadPDF() {
-    try {
-      const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-      const totalPages = pdf.numPages;
-      
-      // 페이지 번호 배열 생성 후 랜덤 셔플 (랜덤으로 문제 나오게 하기)
-      let pageNumbers = Array.from({length: totalPages}, (_, i) => i + 1);
-      pageNumbers.sort(() => Math.random() - 0.5);
-
-      app.innerHTML = ''; // 로딩 메시지 제거
-
-      for (let i = 0; i < pageNumbers.length; i++) {
-        const pageNum = pageNumbers[i];
-        
-        // 카드가 스와이프할 때 바로바로 뜨도록 캔버스 준비
-        const card = document.createElement('div');
-        card.className = 'short-card';
-        
-        const badge = document.createElement('div');
-        badge.className = 'badge';
-        badge.textContent = `문제 ${i + 1} / ${totalPages} (p.${pageNum})`;
-        
-        const canvas = document.createElement('canvas');
-        canvas.className = 'pdf-canvas';
-        
-        card.appendChild(badge);
-        card.appendChild(canvas);
-        app.appendChild(card);
-
-        // PDF 페이지 렌더링
-        renderPage(pdf, pageNum, canvas);
-      }
-    } catch (error) {
-      app.innerHTML = `<div class="short-card" style="color:#ff4757; text-align:center; padding:20px;">
-        PDF를 불러오지 못했습니다.<br>저장소에 'olympus.pdf' 파일이 올라가 있는지 확인해주세요.
-      </div>`;
-      console.error(error);
-    }
-  }
-
-  async function renderPage(pdf, pageNum, canvas) {
-    const page = await pdf.getPage(pageNum);
-    const viewport = page.getViewport({ scale: 2.0 }); // 고화질 렌더링
-    const ctx = canvas.getContext('2d');
-    
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    const renderContext = {
-      canvasContext: ctx,
-      viewport: viewport
-    };
-    await page.render(renderContext).promise;
-  }
-
-  loadPDF();
-</script>
 </body>
 </html>
